@@ -23,6 +23,7 @@ def searchText(path):
 def recognizer(sentence, ngram_list, filelist):
     match_found = False
     while len(sentence) > 0:
+        ngram_list = rcg.make_ngrams(sentence) # Move make_ngram call here
         for ngram in ngram_list[::-1]: # My only job is to get an utterance and find a match. If no match then what?
             if match_found == False and len(sentence) > 0:
                 for file in filelist:

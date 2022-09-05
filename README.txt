@@ -13,3 +13,15 @@ Settings in config.py:
 	ent_min_n: Counts threshold for removing scarce entities, e.g. 3
 	train: Run training stage (True/False)
 	test: Run testing stage (True/False)
+
+Version 1:
+
+- Sentence tokenization and iterative searching
+
+Version 2:
+
+- Simple search for lomgest match
+- Compatible output with the name_entity.tsv
+
+Version 3: (in Progress)
+- Re-design for iterative search over token.tsv

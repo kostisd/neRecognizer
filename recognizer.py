@@ -45,9 +45,6 @@ def recognizer(sentence, filelist):
     d = sorted(entity_dict.items())
     str=""
     ents= (' ' * len(original_sentence))
-    print(len(ents))
-    print(ents + "end")
-    print("\n")
     prev_index = 0
 
     for word, entity in zip(b, d):
@@ -57,7 +54,7 @@ def recognizer(sentence, filelist):
         print("Steps: ", entity[0] - prev_index -1)
         #print("Current loc: ", entity[0] - prev_index)
         str += (" " + word[1])
-        ents = ents[:entity[0]] + entity[1] + ents[entity[0] + 1:]
+        ents = ents[:entity[0]]  + entity[1] + ents[entity[0] + 1:]
         #ents += (("#"*(entity[0] - prev_index - 1)) + entity[1])
         prev_index = entity[0]
 
@@ -100,15 +97,8 @@ def match_finder(sentence, ngram_list, entities_list):
                     # Remove match from sentence and repeat
                     ngram_length = (len(ngram_string))
                     ngram_start = sentence.find(ngram_string)
-
                     match = (ngram_string, entity, ngram_start, ngram_length)
-
-                    if ngram_start == 0: # match is at start of utt
-                        sentence = sentence[ngram_start + ngram_length:len(sentence)]  # removed -1 ,it was del last char
-                    elif (ngram_start + ngram_length) == len(sentence): # match is at the end of utt
-                        sentence = sentence[0:ngram_start]
-                    else: # match in the middle
-                       sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
+                    sentence = trim_sentece(sentence, ngram_length, ngram_start)
                     return [sentence, match]
 
     # if NO MATCH
@@ -116,13 +106,16 @@ def match_finder(sentence, ngram_list, entities_list):
     ngram_length = (len(ngram_string))
     ngram_start = origial_sentence.find(ngram_string)
     match = (ngram_string, entity, ngram_start, ngram_length)
+    sentence = trim_sentece(sentence, ngram_length, ngram_start)
+
+    return [sentence, match]
+
+def trim_sentece(sentence, ngram_length, ngram_start):
     if ngram_start == 0:  # match is at start of utt
         sentence = sentence[ngram_start + ngram_length:len(sentence)]  # removed -1 ,it was del last char
     elif (ngram_start + ngram_length) == len(sentence):  # match is at the end of utt
         sentence = sentence[0:ngram_start]
     else:  # match in the middle
         sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
-    return [sentence, match]
-
-
+    return sentence
 

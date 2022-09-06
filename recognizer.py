@@ -27,9 +27,7 @@ def searchText(ngram_string, path):
     match_entity = "NOMATCH"
     for entity in entities_list:
         textfile = open(entity, 'r')
-        counter = 0
         filetext = textfile.read()
-        print("Lines: ", num_lines, entity)
         textfile.close()
         new_counts = filetext.count(ngram_string)
 

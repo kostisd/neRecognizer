@@ -3,8 +3,9 @@ from os import path
 import re
 
 def clean_string(text):
+    # think about keeping dots etc
     text = re.sub(r'[^a-zA-Z0-9 ]', ' ', str(text)) # str() because some NA string was causing a type error.
-    text = re.sub(' +', ' ', text).lower().strip()
+    text = re.sub(' +', ' ', (text)).lower().strip()
     return text
 
 def filter_entities(data, ent_min_n):
@@ -33,3 +34,21 @@ def make_dictionaries(data):
                 dict.write("%s\n" % text)
             print(" Added Dictionary %s" % ent)
     return 0
+
+def prep_dev_data(read_dev_data):
+    sentence_list = []
+    sentence = ""
+    count = 0
+    for index, line in read_dev_data.iterrows():
+        word = str(line['word'])
+        if word.strip() == ".":
+            sentence_list.append(sentence)
+            count += 1
+            sentence = ""
+        else:
+            not_empty = True if re.search('[a-zA-Z0-9]', word) else False
+            if "*" not in word and not_empty:
+                sentence += (" " + word)
+        if count > 10:
+            break
+    return sentence_list

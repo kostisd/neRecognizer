@@ -1,3 +1,5 @@
+import pandas as pd
+from tabulate import tabulate
 import re
 import os
 
@@ -21,7 +23,6 @@ def searchText(ngram_string, path):
     entities_list = os.listdir()
     # pattern = re.compile(ngram_string)
 
-    match_found = False
     match_counts = 0
     match_entity = "NOMATCH"
     for entity in entities_list:
@@ -52,8 +53,6 @@ def recognizer(sentence):
         entity_matched = match[1]
         start_index_matched = original_sentence.find(string_matched)
         span_matched = match[3]
-        #string_dict[string_matched] = start_index_matched
-        #entity_dict[entity_matched] = start_index_matched
         string_dict[start_index_matched] = string_matched
         entity_dict[start_index_matched] = entity_matched
 
@@ -61,17 +60,15 @@ def recognizer(sentence):
     b = sorted(string_dict.items())
     c = sorted(entity_dict.keys())
     d = sorted(entity_dict.items())
-    str=""
-    ents= (' ' * len(original_sentence))
-    prev_index = 0
 
+    word_list = []
+    entity_list = []
     for word, entity in zip(b, d):
-        str += (" " + word[1])
-        ents = ents[:entity[0]]  + entity[1] + ents[entity[0] + 1:]
-        #ents += (("#"*(entity[0] - prev_index - 1)) + entity[1])
-        prev_index = entity[0]
-    print(str)
-    print(ents)
+        word_list.append(word[1])
+        entity_list.append(entity[1])
+
+    print(tabulate([word_list, entity_list]))
+
     return [string_dict, entity_dict]
 
 def match_finder(sentence, ngram_list):
@@ -81,21 +78,10 @@ def match_finder(sentence, ngram_list):
     for ngram in ngram_list[::-1]:
         if match_found == False:
             ngram_string = " ".join(ngram).strip()
-            # search start
-            #pattern = rcg.searchText("dictionaries/")
-            # for entity in entities_list:
-            #     textfile = open(entity, 'r')
-            #     filetext = textfile.read()
-            #     textfile.close()
-            #     ngram_string = " ".join(ngram).strip()
-            #     pattern = re.compile(ngram_string)
-            # end of search
+
             match_found, entity = searchText(ngram_string, "dictionaries/")
-           # print(searchText(ngram_string, "dictionaries/"))
-            #quit()
-             #   if pattern.search(filetext):
+
             if match_found: # check if match found
-                #print("Match found")
                 # Remove match from sentence and repeat
                 ngram_length = (len(ngram_string))
                 ngram_start = sentence.find(ngram_string)

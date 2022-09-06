@@ -32,12 +32,6 @@ if __name__ == '__main__':
    # filter uncommon entities
    data = prep.filter_entities(data, config.ent_min_n)
    train_data = data
-   # # split data
-   # print("Creating train/dev sets...")
-   #
-   # #train_data, dev_data = train_test_split(data, test_size=config.dev_size)
-   # print(f"\n    Train set size: {len(train_data.index)}")
-   # print(f"      Dev set size:  {len(dev_data.index)}")
 
    if config.train:
       # extract entities to dictionaries from train set

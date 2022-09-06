@@ -21,22 +21,63 @@ def searchText(path):
 
 # Starting searching from the longest ngram
 def recognizer(sentence, filelist):
-    while len(sentence) > 0:
-        ngram_list = make_ngrams(sentence) # Move make_ngram call here
-        for ngram in ngram_list[::-1]: # My only job is to get an utterance and find a match. If no match then what?
-                for file in filelist:
-                    textfile = open(file, 'r')
-                    filetext = textfile.read()
-                    textfile.close()
-                    ngram_string = " ".join(ngram).strip()
-                    pattern = re.compile(ngram_string)
+    string_dict = {}
+    entity_dict = {}
 
-                    if pattern.search(filetext):
-                        match=(ngram_string, file)
-                        return [ngram_string, match]
-        match = (sentence, "NOMATCH")
-        return [ngram_string, match]
+    while len(sentence.strip()) > 0:
+        ngram_list = make_ngrams(sentence.strip())
+        sentence, match = match_finder(sentence, ngram_list, filelist)
+        print("Sentence now is: ", sentence)
+        string_matched = match[0]
+        entity_matched = match[1]
+        start_index_matched = match[2]
+        span_matched = match[3]
+        print("Table: ", string_matched, entity_matched, start_index_matched, span_matched)
+    print("I'M OUT")
+    return [string_dict, entity_dict]
 
+def match_finder(sentence, ngram_list, entities_list):
+    origial_sentence = sentence
+    match_found = False
+    for ngram in ngram_list[::-1]:
+        if match_found == False:
+
+            # search start
+            for entity in entities_list:
+                textfile = open(entity, 'r')
+                filetext = textfile.read()
+                textfile.close()
+                ngram_string = " ".join(ngram).strip()
+                pattern = re.compile(ngram_string)
+            # end of search
+
+                if pattern.search(filetext):
+                    match_found = True
+                    # Remove match from sentence and repeat
+                    ngram_length = (len(ngram_string))
+                    ngram_start = origial_sentence.find(ngram_string)
+                    match = (ngram_string, entity, ngram_start, ngram_length)
+
+                    if ngram_start == 0: # match is at start of utt
+                        sentence = sentence[ngram_start + ngram_length:len(sentence)]  # removed -1 ,it was del last char
+                    elif (ngram_start + ngram_length) == len(sentence): # match is at the end of utt
+                        sentence = sentence[0:ngram_start]
+                    else: # match in the middle
+                       sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
+                    return [sentence, match]
+
+            else: # if NO MATCH
+                entity = "NOMATCH"
+                ngram_length = (len(ngram_string))
+                ngram_start = origial_sentence.find(ngram_string)
+                match = (ngram_string, entity, ngram_start, ngram_length)
+                if ngram_start == 0:  # match is at start of utt
+                    sentence = sentence[ngram_start + ngram_length:len(sentence)]  # removed -1 ,it was del last char
+                elif (ngram_start + ngram_length) == len(sentence):  # match is at the end of utt
+                    sentence = sentence[0:ngram_start]
+                else:  # match in the middle
+                    sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
+                return [sentence, match]
 
 
 

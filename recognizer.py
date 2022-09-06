@@ -21,6 +21,7 @@ def searchText(path):
 
 # Starting searching from the longest ngram
 def recognizer(sentence, filelist):
+    original_sentence = sentence
     string_dict = {}
     entity_dict = {}
     print("Original sentence", sentence)
@@ -29,7 +30,7 @@ def recognizer(sentence, filelist):
         sentence, match = match_finder(sentence, ngram_list, filelist)
         string_matched = match[0]
         entity_matched = match[1]
-        start_index_matched = match[2]
+        start_index_matched = original_sentence.find(string_matched)
         span_matched = match[3]
         print("Table: ", string_matched, entity_matched, start_index_matched, span_matched)
         print("Trimmed Sentence ", sentence)
@@ -38,6 +39,7 @@ def recognizer(sentence, filelist):
 
 def match_finder(sentence, ngram_list, entities_list):
     origial_sentence = sentence
+    print("MATCH_FINDER:", origial_sentence, sentence)
     match_found = False
     for ngram in ngram_list[::-1]:
         if match_found == False:
@@ -55,7 +57,8 @@ def match_finder(sentence, ngram_list, entities_list):
                     match_found = True
                     # Remove match from sentence and repeat
                     ngram_length = (len(ngram_string))
-                    ngram_start = origial_sentence.find(ngram_string)
+                    ngram_start = sentence.find(ngram_string)
+
                     match = (ngram_string, entity, ngram_start, ngram_length)
 
                     if ngram_start == 0: # match is at start of utt

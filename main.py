@@ -31,13 +31,13 @@ if __name__ == '__main__':
 
    # filter uncommon entities
    data = prep.filter_entities(data, config.ent_min_n)
-
-   # split data
-   print("Creating train/dev sets...")
-
-   train_data, dev_data = train_test_split(data, test_size=config.dev_size)
-   print(f"\n    Train set size: {len(train_data.index)}")
-   print(f"      Dev set size:  {len(dev_data.index)}")
+   train_data = data
+   # # split data
+   # print("Creating train/dev sets...")
+   #
+   # #train_data, dev_data = train_test_split(data, test_size=config.dev_size)
+   # print(f"\n    Train set size: {len(train_data.index)}")
+   # print(f"      Dev set size:  {len(dev_data.index)}")
 
    if config.train:
       # extract entities to dictionaries from train set
@@ -50,10 +50,7 @@ if __name__ == '__main__':
 
    if config.test:
 
-      # Read test data
-      dev_data = dev_data.head(100) # REMOVE THIS TO RUN FULL
-      testset = list(zip(dev_data['string'], dev_data['type']))
-      testset = dummy.testset
+      #testset = dummy.testset
       testset = devset
 
       # Run recognizer
@@ -63,7 +60,6 @@ if __name__ == '__main__':
       results_table = scr.make_results_table()
       print("Running Recognizer... ", end = '', flush=True)
       print("\n") # REMOVE later SOOOOOOOOOOOOOS
-      #filelist = rcg.searchText("dictionaries/")
 
       matches = []
       for tst in list(testset):

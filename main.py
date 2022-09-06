@@ -8,10 +8,16 @@ import sys
 from sklearn.model_selection import train_test_split
 import json
 
+import dummy
+
 # keep current dir
 pwd = os.getcwd()
 
-data = pd.read_csv(config.input_data, sep='\t', header=0)
+data = pd.read_csv(config.train_tsv, sep='\t', header=0)
+read_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
+print("Done reading data")
+devset = prep.prep_dev_data(read_dev_data)
+
 print_line="------------"
 
 if __name__ == '__main__':
@@ -45,7 +51,10 @@ if __name__ == '__main__':
    if config.test:
 
       # Read test data
+      dev_data = dev_data.head(100) # REMOVE THIS TO RUN FULL
       testset = list(zip(dev_data['string'], dev_data['type']))
+      testset = dummy.testset
+      testset = devset
 
       # Run recognizer
       print("\n" + print_line)
@@ -53,15 +62,20 @@ if __name__ == '__main__':
       print(print_line)
       results_table = scr.make_results_table()
       print("Running Recognizer... ", end = '', flush=True)
-      filelist = rcg.searchText("dictionaries/")
+      print("\n") # REMOVE later SOOOOOOOOOOOOOS
+      #filelist = rcg.searchText("dictionaries/")
 
       matches = []
       for tst in list(testset):
          sentence = tst[0]
-         ngram_list = rcg.make_ngrams(sentence)
-         rcg_output = rcg.recognizer(sentence, ngram_list, filelist)
+         sentence = tst.lower()
+         #ngram_list = rcg.make_ngrams(sentence)
+         pwd = os.getcwd()
+         rcg_output = rcg.recognizer(sentence)
+         #quit()
          matches.append(rcg_output[1])
       print('Done')
+      quit()
 
       print("Calculating accuracy... ", end="", flush=True)
 
@@ -72,7 +86,7 @@ if __name__ == '__main__':
       print('Done')
 
       print("Saving results to file... ", end="", flush=True)
-      os.chdir(pwd) # return to cwd to save results here
+     # os.chdir(pwd) # done in searchText now
       results_table.to_csv("./results_table.tsv", sep='\t')
       print("Done")
       print("Results saved in: results_table.tsv")

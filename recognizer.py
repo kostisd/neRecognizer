@@ -15,9 +15,12 @@ def make_ngrams(sentence):
     return ngram_list
 
 def searchText(ngram_string, path):
+    # change dirs to access dictionaries
     pwd = os.getcwd()
     os.chdir(path)
     entities_list = os.listdir()
+    # pattern = re.compile(ngram_string)
+
     match_found = False
     match_counts = 0
     match_entity = "NOMATCH"
@@ -25,28 +28,17 @@ def searchText(ngram_string, path):
         textfile = open(entity, 'r')
         filetext = textfile.read()
         textfile.close()
-        #ngram_string = " ".join(ngram).strip()
-        #pattern = re.compile(ngram_string)
         new_counts = filetext.count(ngram_string)
         if new_counts > match_counts:
             match_counts = new_counts
             match_entity = entity
-    print(ngram_string, match_entity, match_counts)
-        #pattern = re.compile(ngram_string)
-        #match_found = pattern.search(filetext)
-        #match_found = True if pattern.findall(filetext) else False # CHANGED TO FIND FROM SEARCH SOOOOOOOOS
-        #if match_found:
-            #print(data.count("python"))
-           # print(match_found, entity, pattern, filetext.count(ngram_string))
 
-        #if pattern.search(filetext):
-        #    match_found = True
-        #print(match_found, entity)
-        #else:
-        #quit()
-    os.chdir(pwd)
+    # Tell match_finder there was NOMATCH for this ngram
+    match_found = True if match_counts > 0 else False
 
-    return [match_found, entity]
+    os.chdir(pwd) # Return to default pwd
+
+    return [match_found, match_entity]
 
 # Starting searching from the longest ngram
 def recognizer(sentence):
@@ -78,8 +70,8 @@ def recognizer(sentence):
         ents = ents[:entity[0]]  + entity[1] + ents[entity[0] + 1:]
         #ents += (("#"*(entity[0] - prev_index - 1)) + entity[1])
         prev_index = entity[0]
-  #  print(str)
-  #  print(ents)
+    print(str)
+    print(ents)
     return [string_dict, entity_dict]
 
 def match_finder(sentence, ngram_list):
@@ -103,6 +95,7 @@ def match_finder(sentence, ngram_list):
             #quit()
              #   if pattern.search(filetext):
             if match_found: # check if match found
+                #print("Match found")
                 # Remove match from sentence and repeat
                 ngram_length = (len(ngram_string))
                 ngram_start = sentence.find(ngram_string)

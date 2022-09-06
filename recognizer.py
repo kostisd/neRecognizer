@@ -24,7 +24,7 @@ def recognizer(sentence, filelist):
     original_sentence = sentence
     string_dict = {}
     entity_dict = {}
-    print("Original sentence", sentence)
+    #print("Original sentence", sentence)
     while len(sentence.strip()) > 0:
         ngram_list = make_ngrams(sentence.strip())
         sentence, match = match_finder(sentence, ngram_list, filelist)
@@ -43,12 +43,25 @@ def recognizer(sentence, filelist):
     b = sorted(string_dict.items())
     c = sorted(entity_dict.keys())
     d = sorted(entity_dict.items())
-    print(a)
-    print(b)
-    print(c)
-    print(d)
-    entity_dict = sorted(entity_dict)
-    #print("Dictionary: ", string_dict)
+    str=""
+    ents=""
+    print("\n")
+    for word, entity in zip(b, d):
+        str += (" " + word[1])
+        ents += (" " + entity[1])
+
+        #str += (" " + word[0][1])
+        #ent += (" " + str(entity[1][1]))
+    print(str)
+    print(ents)
+
+    #print(str)
+    #print(a)
+    # print(b)
+    # print(c)
+    # print(d)
+    # entity_dict = sorted(entity_dict)
+    # #print("Dictionary: ", string_dict)
     #print(entity_dict)
 
 

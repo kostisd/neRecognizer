@@ -51,19 +51,20 @@ def recognizer(sentence):
         sentence, match = match_finder(sentence, ngram_list)
         string_matched = match[0]
         entity_matched = match[1]
+        #span_matched = match[3]
+
         start_index_matched = original_sentence.find(string_matched)
-        span_matched = match[3]
         string_dict[start_index_matched] = string_matched
         entity_dict[start_index_matched] = entity_matched
 
-    a = sorted(string_dict.keys())
-    b = sorted(string_dict.items())
-    c = sorted(entity_dict.keys())
-    d = sorted(entity_dict.items())
+    words = sorted(string_dict.items())
+    entities = sorted(entity_dict.items())
+    #words_indexes = sorted(string_dict.keys())
+    #entities_indexes = sorted(entity_dict.keys())
 
     word_list = []
     entity_list = []
-    for word, entity in zip(b, d):
+    for word, entity in zip(words, entities):
         word_list.append(word[1])
         entity_list.append(entity[1])
 
@@ -73,7 +74,6 @@ def recognizer(sentence):
 
 def match_finder(sentence, ngram_list):
     origial_sentence = sentence
-    #print("MATCH_FINDER:", origial_sentence, sentence)
     match_found = False
     for ngram in ngram_list[::-1]:
         if match_found == False:

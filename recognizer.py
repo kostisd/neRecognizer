@@ -27,9 +27,12 @@ def searchText(ngram_string, path):
     match_entity = "NOMATCH"
     for entity in entities_list:
         textfile = open(entity, 'r')
+        counter = 0
         filetext = textfile.read()
+        print("Lines: ", num_lines, entity)
         textfile.close()
         new_counts = filetext.count(ngram_string)
+
         if new_counts > match_counts:
             match_counts = new_counts
             match_entity = entity
@@ -40,6 +43,42 @@ def searchText(ngram_string, path):
     os.chdir(pwd) # Return to default pwd
 
     return [match_found, match_entity]
+
+def trim_sentece(sentence, ngram_length, ngram_start):
+    if ngram_start == 0:  # match is at start of utt
+        sentence = sentence[ngram_start + ngram_length:len(sentence)]  # removed -1 ,it was del last char
+    elif (ngram_start + ngram_length) == len(sentence):  # match is at the end of utt
+        sentence = sentence[0:ngram_start]
+    else:  # match in the middle
+        sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
+    return sentence
+
+def match_finder(sentence, ngram_list):
+    origial_sentence = sentence
+    match_found = False
+    for ngram in ngram_list[::-1]:
+        if match_found == False:
+            ngram_string = " ".join(ngram).strip()
+
+            match_found, entity = searchText(ngram_string, "dictionaries/")
+
+            if match_found: # check if match found
+                # Remove match from sentence and repeat
+                ngram_length = (len(ngram_string))
+                ngram_start = sentence.find(ngram_string)
+
+                match = (ngram_string, entity, ngram_start, ngram_length)
+                sentence = trim_sentece(sentence, ngram_length, ngram_start)
+                return [sentence, match]
+
+    # if NO MATCH
+    entity = "NOMATCH"
+    ngram_length = (len(ngram_string))
+    ngram_start = origial_sentence.find(ngram_string)
+    match = (ngram_string, entity, ngram_start, ngram_length)
+    sentence = trim_sentece(sentence, ngram_length, ngram_start)
+
+    return [sentence, match]
 
 # Starting searching from the longest ngram
 def recognizer(sentence):
@@ -72,39 +111,7 @@ def recognizer(sentence):
 
     return [string_dict, entity_dict]
 
-def match_finder(sentence, ngram_list):
-    origial_sentence = sentence
-    match_found = False
-    for ngram in ngram_list[::-1]:
-        if match_found == False:
-            ngram_string = " ".join(ngram).strip()
 
-            match_found, entity = searchText(ngram_string, "dictionaries/")
 
-            if match_found: # check if match found
-                # Remove match from sentence and repeat
-                ngram_length = (len(ngram_string))
-                ngram_start = sentence.find(ngram_string)
 
-                match = (ngram_string, entity, ngram_start, ngram_length)
-                sentence = trim_sentece(sentence, ngram_length, ngram_start)
-                return [sentence, match]
-
-    # if NO MATCH
-    entity = "NOMATCH"
-    ngram_length = (len(ngram_string))
-    ngram_start = origial_sentence.find(ngram_string)
-    match = (ngram_string, entity, ngram_start, ngram_length)
-    sentence = trim_sentece(sentence, ngram_length, ngram_start)
-
-    return [sentence, match]
-
-def trim_sentece(sentence, ngram_length, ngram_start):
-    if ngram_start == 0:  # match is at start of utt
-        sentence = sentence[ngram_start + ngram_length:len(sentence)]  # removed -1 ,it was del last char
-    elif (ngram_start + ngram_length) == len(sentence):  # match is at the end of utt
-        sentence = sentence[0:ngram_start]
-    else:  # match in the middle
-        sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
-    return sentence
 

@@ -19,17 +19,25 @@ def searchText(ngram_string, path):
     os.chdir(path)
     entities_list = os.listdir()
     match_found = False
+    match_counts = 0
+    match_entity = "NOMATCH"
     for entity in entities_list:
         textfile = open(entity, 'r')
         filetext = textfile.read()
         textfile.close()
         #ngram_string = " ".join(ngram).strip()
         #pattern = re.compile(ngram_string)
-        pattern = re.compile(ngram_string)
+        new_counts = filetext.count(ngram_string)
+        if new_counts > match_counts:
+            match_counts = new_counts
+            match_entity = entity
+    print(ngram_string, match_entity, match_counts)
+        #pattern = re.compile(ngram_string)
         #match_found = pattern.search(filetext)
-        match_found = True if pattern.findall(filetext) else False # CHANGED TO FIND FROM SEARCH SOOOOOOOOS
-        if match_found:
-            print(match_found, entity, pattern)
+        #match_found = True if pattern.findall(filetext) else False # CHANGED TO FIND FROM SEARCH SOOOOOOOOS
+        #if match_found:
+            #print(data.count("python"))
+           # print(match_found, entity, pattern, filetext.count(ngram_string))
 
         #if pattern.search(filetext):
         #    match_found = True

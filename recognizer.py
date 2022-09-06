@@ -32,14 +32,31 @@ def recognizer(sentence, filelist):
         entity_matched = match[1]
         start_index_matched = original_sentence.find(string_matched)
         span_matched = match[3]
-        print("Table: ", string_matched, entity_matched, start_index_matched, span_matched)
-        print("Trimmed Sentence ", sentence)
-    print("I'M OUT")
+        #string_dict[string_matched] = start_index_matched
+        #entity_dict[entity_matched] = start_index_matched
+        string_dict[start_index_matched] = string_matched
+        entity_dict[start_index_matched] = entity_matched
+
+        #print("Table: ", string_matched, entity_matched, start_index_matched, span_matched)
+        #print("Trimmed Sentence ", sentence)
+    a = sorted(string_dict.keys())
+    b = sorted(string_dict.items())
+    c = sorted(entity_dict.keys())
+    d = sorted(entity_dict.items())
+    print(a)
+    print(b)
+    print(c)
+    print(d)
+    entity_dict = sorted(entity_dict)
+    #print("Dictionary: ", string_dict)
+    #print(entity_dict)
+
+
     return [string_dict, entity_dict]
 
 def match_finder(sentence, ngram_list, entities_list):
     origial_sentence = sentence
-    print("MATCH_FINDER:", origial_sentence, sentence)
+    #print("MATCH_FINDER:", origial_sentence, sentence)
     match_found = False
     for ngram in ngram_list[::-1]:
         if match_found == False:
@@ -69,7 +86,7 @@ def match_finder(sentence, ngram_list, entities_list):
                        sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
                     return [sentence, match]
 
-    #else: # if NO MATCH
+    # if NO MATCH
     entity = "NOMATCH"
     ngram_length = (len(ngram_string))
     ngram_start = origial_sentence.find(ngram_string)

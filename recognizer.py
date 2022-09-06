@@ -44,11 +44,23 @@ def recognizer(sentence, filelist):
     c = sorted(entity_dict.keys())
     d = sorted(entity_dict.items())
     str=""
-    ents=""
+    ents= (' ' * len(original_sentence))
+    print(len(ents))
+    print(ents + "end")
     print("\n")
+    prev_index = 0
+
     for word, entity in zip(b, d):
+        #print("Entity: ", entity, " Word: ", word)
+        print("Prev: " , prev_index)
+        print("Curr", entity[0])
+        print("Steps: ", entity[0] - prev_index -1)
+        #print("Current loc: ", entity[0] - prev_index)
         str += (" " + word[1])
-        ents += (" " + entity[1])
+        ents = ents[:entity[0]] + entity[1] + ents[entity[0] + 1:]
+        #ents += (("#"*(entity[0] - prev_index - 1)) + entity[1])
+        prev_index = entity[0]
+
 
         #str += (" " + word[0][1])
         #ent += (" " + str(entity[1][1]))

@@ -40,6 +40,9 @@ def prep_dev_data(read_dev_data):
     sentence_list = []
     sentence = ""
     count = 0
+    # Sort because some utterances seem messed up (l. 129050)
+    read_dev_data = read_dev_data.head(1000)
+    read_dev_data = read_dev_data.sort_values('id')
     for index, line in read_dev_data.iterrows():
         word = str(line['word'])
         id = str(line['id'])

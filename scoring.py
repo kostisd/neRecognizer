@@ -10,15 +10,20 @@ def scoring(rcg_output, train_data, results_table):
     train_data = train_data.dropna(subset = ['subtree_id'])
     train_data = train_data[train_data['subtree_id'].str.contains(id)]
 
-   if train_data:
+    if not train_data.empty:
         for ngram, entity in zip(ngram_list, entity_list):
-            
-    else:
-        return
-    print("ID: " , id)
-    print(train_data)
+           # if train_data['string'].where(train_data['string'] == ngram):
+            match = train_data[train_data['string'] == ngram]
+            if not match.empty:
+                true_entity = (train_data[train_data['string'] == ngram]['type'].to_string(index = False)).strip()
 
-
+                print(ngram, true_entity)
+           # if not train_data[train_data['string'] == ngram].empty:
+                #true_entity =
+    #else:
+     #   print("NOT THERE")
+    #print("ID: " , id)
+    #print(train_data)
 
 def calc_accuracy(matches, testset, results_table):
     corr = 0

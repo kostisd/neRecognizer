@@ -4,8 +4,8 @@ import re
 
 def clean_string(text):
     # think about keeping dots etc
-    text = re.sub(r'[^a-zA-Z0-9 ]', ' ', str(text)) # str() because some NA string was causing a type error.
-    text = re.sub(' +', ' ', (text)).lower().strip()
+    #text = re.sub(r'[^a-zA-Z0-9 ]', ' ', str(text)) # str() because some NA string was causing a type error.
+    text = re.sub(' +', ' ', (str(text))).lower().strip()
     return text
 
 def filter_entities(data, ent_min_n):

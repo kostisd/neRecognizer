@@ -21,7 +21,6 @@ def searchText(ngram_string, path):
     pwd = os.getcwd()
     os.chdir(path)
     entities_list = os.listdir()
-    # pattern = re.compile(ngram_string)
 
     match_counts = 0
     match_entity = "NOMATCH"
@@ -29,8 +28,9 @@ def searchText(ngram_string, path):
         textfile = open(entity, 'r')
         filetext = textfile.read()
         textfile.close()
-        new_counts = filetext.count(ngram_string)
 
+        # Searching algorithm
+        new_counts = filetext.count(ngram_string)
         if new_counts > match_counts:
             match_counts = new_counts
             match_entity = entity

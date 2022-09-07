@@ -5,6 +5,7 @@ import re
 def clean_string(text):
     # think about keeping dots etc
     #text = re.sub(r'[^a-zA-Z0-9 ]', ' ', str(text)) # str() because some NA string was causing a type error.
+    text = re.sub(',', ' ', str(text))
     text = re.sub(' +', ' ', (str(text))).lower().strip()
     return text
 

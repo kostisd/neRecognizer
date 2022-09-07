@@ -10,12 +10,9 @@ import json
 
 import dummy
 
-data = pd.read_csv(config.train_tsv, sep='\t', header=0)
-read_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
-print("Done reading data")
-devset = prep.prep_dev_data(read_dev_data)
 
-print_line="------------"
+
+print_line = "------------"
 
 if __name__ == '__main__':
 
@@ -23,13 +20,28 @@ if __name__ == '__main__':
    print("  Data Preprocessing")
    print(print_line + print_line)
 
-   # normalise data
-   data[config.string_col] = data[config.string_col].apply(prep.clean_string)
+   print("Reading data... ", end = '', flush=True)
+   original_train_data = pd.read_csv(config.train_tsv, sep='\t', header=0)
+   original_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
+   print("Done")
 
-   # filter uncommon entities
-   data = prep.filter_entities(data, config.ent_min_n)
-   train_data = data
+   # Data Preparation
+   train_data = original_train_data
 
+   # Normalise utterances
+   print("Preparing train set... ", end = '', flush=True)
+   train_data[config.string_col] = train_data[config.string_col].apply(prep.clean_string)
+   print("Done")
+
+   # Extract dev sentences and normalise
+   print("Preparing dev set... ", end = '', flush=True)
+   devset = prep.prep_dev_data(original_dev_data)
+   print("Done")
+
+   # filter uncommon entities in train set
+   train_data = prep.filter_entities(train_data, config.ent_min_n)
+
+   quit()
    if config.train:
       # extract entities to dictionaries from train set
       print("\n" + print_line)
@@ -42,7 +54,7 @@ if __name__ == '__main__':
    if config.test:
 
       #testset = dummy.testset
-      testset = devset
+      #testset = devset
 
       # Run recognizer
       print("\n" + print_line)
@@ -53,12 +65,17 @@ if __name__ == '__main__':
       print("\n") # REMOVE later SOOOOOOOOOOOOOS
 
       matches = []
-      for tst in list(testset):
-         sentence = tst[0]
-         sentence = tst.lower()
+      for line in list(devset):
+         sentence = line[0]
+         sentence = line.lower()
          rcg_output = rcg.recognizer(sentence)
          matches.append(rcg_output[1])
       print('Done')
+
+      print("Prepare matches table... ", end="", flush=True)
+
+      print('Done')
+
       quit()
 
       print("Calculating accuracy... ", end="", flush=True)

@@ -44,6 +44,7 @@ def prep_dev_data(read_dev_data):
         word = str(line['word'])
         id = str(line['id'])
         if word.strip() == ".":
+            sentence = clean_string(sentence)
             sentence_list.append((id, sentence))
             count += 1
             sentence = ""

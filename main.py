@@ -10,9 +10,6 @@ import json
 
 import dummy
 
-# keep current dir
-pwd = os.getcwd()
-
 data = pd.read_csv(config.train_tsv, sep='\t', header=0)
 read_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
 print("Done reading data")
@@ -59,10 +56,7 @@ if __name__ == '__main__':
       for tst in list(testset):
          sentence = tst[0]
          sentence = tst.lower()
-         #ngram_list = rcg.make_ngrams(sentence)
-         pwd = os.getcwd()
          rcg_output = rcg.recognizer(sentence)
-         #quit()
          matches.append(rcg_output[1])
       print('Done')
       quit()
@@ -76,7 +70,6 @@ if __name__ == '__main__':
       print('Done')
 
       print("Saving results to file... ", end="", flush=True)
-     # os.chdir(pwd) # done in searchText now
       results_table.to_csv("./results_table.tsv", sep='\t')
       print("Done")
       print("Results saved in: results_table.tsv")

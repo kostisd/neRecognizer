@@ -2,6 +2,7 @@ import pandas as pd
 from tabulate import tabulate
 import re
 import os
+import prep_data
 
 def make_ngrams(sentence):
     ngram = 1 # starting from 1
@@ -28,6 +29,14 @@ def searchText(ngram_string, path):
         textfile = open(entity, 'r')
         filetext = textfile.read()
         textfile.close()
+        # apply cleaning to both pattern and string
+        # filetext = prep_data.strong_clean_string(filetext)
+        # ngram_string = prep_data.strong_clean_string(ngram_string)
+        # pattern = 'r"^' + ngram_string + '$'
+        # new_counts = filetext.count(pattern)
+
+      #  print(pattern)
+      #  quit()
 
         # Searching algorithm
         new_counts = filetext.count(ngram_string)
@@ -44,11 +53,19 @@ def searchText(ngram_string, path):
 
 def trim_sentece(sentence, ngram_length, ngram_start):
     if ngram_start == 0:  # match is at start of utt
-        sentence = sentence[ngram_start + ngram_length:len(sentence)]  # removed -1 ,it was del last char
-    elif (ngram_start + ngram_length) == len(sentence):  # match is at the end of utt
+        #sentence = sentence[ngram_start + ngram_length:len(sentence)]  # removed -1 ,it was del last char
+        # keep an eye on this change
+        sentence = sentence[ngram_start + ngram_length:]  # removed -1 ,it was del last char
+    elif (ngram_start + ngram_length) >= len(sentence):  # match is at the end of utt (KEEP AN EYE AT >
         sentence = sentence[0:ngram_start]
-    else:  # match in the middle
+    elif ngram_start > 0 and (ngram_start + ngram_length) < len(sentence):  # match in the middle
+        # MAJOR CHANGE HERE
         sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
+        #sentence2 = entence[ngram_start + ngram_length:]
+    else:
+        print("ERROR rcg.trim_sentence: Something is wrong with indexing this ngram")
+        quit()
+
     return sentence
 
 def match_finder(sentence, ngram_list):
@@ -94,9 +111,11 @@ def recognizer(input_list):
 
         start_index_matched = original_sentence.find(string_matched)
         string_dict[start_index_matched] = string_matched
+        print(string_dict)
         entity_dict[start_index_matched] = entity_matched
 
     words = sorted(string_dict.items())
+    print("Sorted: ", words)
     entities = sorted(entity_dict.items())
     #words_indexes = sorted(string_dict.keys())
     #entities_indexes = sorted(entity_dict.keys())

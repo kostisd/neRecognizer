@@ -48,7 +48,7 @@ def searchText2(ngram_string, path):
     os.chdir(path)
     entities_list = os.listdir()
 
-    match_entity = "NOMATCH"
+    match_entity = "NONE"
     match_found = False
     ngram_string = ngram_string.strip()
     ngram_string = "^" + ngram_string + "$"
@@ -102,7 +102,6 @@ def searchText(ngram_string, path):
 
     return [match_found, match_entity]
 
-
 def match_finder(ngram_list):
     match_found = False # should stop searching if True
     for ngram in ngram_list[::-1]: # starting from the longest ngram
@@ -127,14 +126,18 @@ def recognizer(input_list):
     id = input_list[0]
     string_dict = {} # add all matched ngrams here
     entity_dict = {} # add all found entities here
-    if sentence_queue: # if sentence_queue is empty, we are done!
+  #  if sentence_queue: # if sentence_queue is empty, we are done!
+    while sentence_queue:
+        print("Queue 0: ", sentence_queue)
         sentence = sentence_queue.pop(0)
         while len(sentence.strip()) > 0: # this will stop the matching and trimming cycle
+
           #  print("QUEUE 1: ", sentence_queue)
             ngram_list = make_ngrams(sentence) # we re-do the ngrams after every match
             match = match_finder(ngram_list) # sentence here is a new, trimmed sub-sentence
             string_matched, entity_matched = match[0], match[1] # match_finder just sends the matched ngram and it's tag
             start_index_matched = original_sentence.find(string_matched) # FOR SORTING - NOT TRIMMING find match in original
+            print(string_matched)
             string_dict[start_index_matched] = string_matched # store matched string
             entity_dict[start_index_matched] = entity_matched # store tag of string
             #print("Sentence to be trimmed: ", sentence)
@@ -142,6 +145,7 @@ def recognizer(input_list):
             trim_index_matched = sentence.find(string_matched) # FOR SORTING - NOT TRIMMING find match in original
             sentence_queue = trim_sentece(sentence_queue, sentence, trim_index_matched, len(string_matched)) # returns queue
           #  print("QUEUE 2: ", sentence_queue)
+            print("Queue 1: ", sentence_queue)
             sentence = sentence_queue.pop(0)
            # print("Sentence after trimmed: ", sentence, start_index_matched, len(string_matched))
             #print("string_matched: ", string_matched)

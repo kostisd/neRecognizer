@@ -60,7 +60,10 @@ def trim_sentece(sentence, ngram_length, ngram_start):
         sentence = sentence[0:ngram_start]
     elif ngram_start > 0 and (ngram_start + ngram_length) < len(sentence):  # match in the middle
         # MAJOR CHANGE HERE
-        sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
+        sentence1 = sentence[0:ngram_start]
+        
+        sentence2 = sentence[(ngram_start + ngram_length):]
+        #sentence = sentence[0:ngram_start] + sentence[(ngram_start + 1 + ngram_length):len(sentence) + 1]
         #sentence2 = entence[ngram_start + ngram_length:]
     else:
         print("ERROR rcg.trim_sentence: Something is wrong with indexing this ngram")

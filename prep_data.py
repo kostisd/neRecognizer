@@ -2,6 +2,13 @@ import numpy as np
 from os import path
 import re
 
+def strong_clean_string(text):
+    # think about keeping dots etc
+    text = re.sub(r'[^a-zA-Z0-9 ]', ' ', str(text)) # str() because some NA string was causing a type error.
+    text = re.sub(',', ' ', str(text))
+    text = re.sub(' +', ' ', (str(text))).lower().strip()
+    return text
+
 def clean_string(text):
     # think about keeping dots etc
     #text = re.sub(r'[^a-zA-Z0-9 ]', ' ', str(text)) # str() because some NA string was causing a type error.
@@ -41,7 +48,7 @@ def prep_dev_data(read_dev_data):
     sentence = ""
     # Sort because some utterances seem messed up (l. 129050)
     #read_dev_data = read_dev_data.head(1000)
-    read_dev_data = read_dev_data
+    read_dev_data = read_dev_data.head(200)
 
    # read_dev_data = read_dev_data.sort_values('id') # sort messes things up
 

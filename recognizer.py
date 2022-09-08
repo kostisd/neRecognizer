@@ -59,12 +59,12 @@ def searchText2(ngram_string, path):
                 if found:
                     match_found = True
                     match_entity = entity
+
                     f.close()
                     os.chdir(pwd)  # Return to default pwd
                     return [match_found, match_entity]
             f.close()
     os.chdir(pwd) # Return to default pwd
-
     return [match_found, match_entity]
 
 

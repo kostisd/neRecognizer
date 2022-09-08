@@ -52,7 +52,7 @@ def trim_sentece(sentence, ngram_length, ngram_start):
     return sentence
 
 def match_finder(sentence, ngram_list):
-    origial_sentence = sentence
+    original_sentence = sentence
     match_found = False
     for ngram in ngram_list[::-1]:
         if match_found == False:
@@ -63,7 +63,7 @@ def match_finder(sentence, ngram_list):
             if match_found: # check if match found
                 # Remove match from sentence and repeat
                 ngram_length = (len(ngram_string))
-                ngram_start = sentence.find(ngram_string)
+                ngram_start = original_sentence.find(ngram_string)
 
                 match = (ngram_string, entity, ngram_start, ngram_length)
                 sentence = trim_sentece(sentence, ngram_length, ngram_start)
@@ -72,15 +72,17 @@ def match_finder(sentence, ngram_list):
     # if NO MATCH
     entity = "NOMATCH"
     ngram_length = (len(ngram_string))
-    ngram_start = origial_sentence.find(ngram_string)
+    ngram_start = original_sentence.find(ngram_string)
     match = (ngram_string, entity, ngram_start, ngram_length)
     sentence = trim_sentece(sentence, ngram_length, ngram_start)
 
     return [sentence, match]
 
 # Starting searching from the longest ngram
-def recognizer(sentence):
-    original_sentence = sentence
+def recognizer(input_list):
+    original_sentence = input_list[1]
+    sentence = original_sentence
+    id = input_list[0]
     string_dict = {}
     entity_dict = {}
     while len(sentence.strip()) > 0:
@@ -88,7 +90,7 @@ def recognizer(sentence):
         sentence, match = match_finder(sentence, ngram_list)
         string_matched = match[0]
         entity_matched = match[1]
-        #span_matched = match[3]
+        # span_matched = match[3]
 
         start_index_matched = original_sentence.find(string_matched)
         string_dict[start_index_matched] = string_matched
@@ -105,11 +107,8 @@ def recognizer(sentence):
         word_list.append(word[1])
         entity_list.append(entity[1])
 
-    print(tabulate([word_list, entity_list]))
+    #print(tabulate([word_list, entity_list]))
 
-    return [string_dict, entity_dict]
-
-
-
-
+    return (id, word_list, entity_list)
+    #return [string_dict, entity_dict]
 

@@ -39,22 +39,19 @@ def make_dictionaries(data):
 def prep_dev_data(read_dev_data):
     sentence_list = []
     sentence = ""
-    count = 0
     # Sort because some utterances seem messed up (l. 129050)
     read_dev_data = read_dev_data.head(1000)
-    read_dev_data = read_dev_data.sort_values('id')
+   # read_dev_data = read_dev_data.sort_values('id') # sort messes things up
+
     for index, line in read_dev_data.iterrows():
         word = str(line['word'])
         id = str(line['id'])
         if word.strip() == ".":
             sentence = clean_string(sentence)
             sentence_list.append((id, sentence))
-            count += 1
             sentence = ""
         else:
             not_empty = True if re.search('[a-zA-Z0-9]', word) else False
             if "*" not in word and not_empty:
                 sentence += (" " + word)
-        if count > 10:
-            break
     return sentence_list

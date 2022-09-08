@@ -6,43 +6,45 @@ import pandas as pd
 import os
 import sys
 from sklearn.model_selection import train_test_split
-import json
-
+#import json
+from tabulate import tabulate
+import io
+import csv
 import dummy
-
+from prettytable import PrettyTable
 
 
 print_line = "------------"
 
 if __name__ == '__main__':
 
-   print("\n" + print_line + print_line)
-   print("  Data Preprocessing")
-   print(print_line + print_line)
+    print("\n" + print_line + print_line)
+    print("  Data Preprocessing")
+    print(print_line + print_line)
 
-   print("Reading data... ", end = '', flush=True)
-   original_train_data = pd.read_csv(config.train_tsv, sep='\t', header=0)
-   original_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
-   print("Done")
+    # Data Loading
+    print("Reading data... ", end = '', flush=True)
+    original_train_data = pd.read_csv(config.train_tsv, sep='\t', header=0)
+    original_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
+    print("Done")
 
-   # Data Preparation
-   train_data = original_train_data
+    # Data Preparation
+    train_data = original_train_data
 
-   # Normalise utterances
-   print("Preparing train set... ", end = '', flush=True)
-   train_data[config.string_col] = train_data[config.string_col].apply(prep.clean_string)
-   print("Done")
+    # Normalise utterances
+    print("Preparing train set... ", end = '', flush=True)
+    train_data[config.string_col] = train_data[config.string_col].apply(prep.clean_string)
+    print("Done")
 
-   # Extract dev sentences and normalise
-   print("Preparing dev set... ", end = '', flush=True)
-   devset = prep.prep_dev_data(original_dev_data)
-   print("Done")
+    # Extract dev sentences and normalise
+    print("Preparing dev set... ", end = '', flush=True)
+    devset = prep.prep_dev_data(original_dev_data)
+    print("Done")
 
-   # filter uncommon entities in train set
-   train_data = prep.filter_entities(train_data, config.ent_min_n)
+    # filter uncommon entities in train set
+    train_data = prep.filter_entities(train_data, config.ent_min_n)
 
-   quit()
-   if config.train:
+    if config.train:
       # extract entities to dictionaries from train set
       print("\n" + print_line)
       print("  Training")
@@ -51,52 +53,59 @@ if __name__ == '__main__':
       print("Preparing Dictionaries...\n")
       prep.make_dictionaries(train_data)
 
-   if config.test:
-
-      #testset = dummy.testset
-      #testset = devset
-
+    if config.test:
       # Run recognizer
       print("\n" + print_line)
       print("  Testing:   ")
       print(print_line)
-      results_table = scr.make_results_table()
+
       print("Running Recognizer... ", end = '', flush=True)
-      print("\n") # REMOVE later SOOOOOOOOOOOOOS
 
       matches = []
+      results_table = scr.make_table()
+
+      # Initializing f/t positive and f/t negative values to store scores
+      fp = tp = fn = tn = 0
+      #print(list[devset])
+
       for line in list(devset):
-         sentence = line[0]
-         sentence = line.lower()
-         rcg_output = rcg.recognizer(sentence)
-         matches.append(rcg_output[1])
+          rcg_output = rcg.recognizer(line)
+          ngram = rcg_output[1]
+          entity = rcg_output[2]
+
+          local_fp, local_tp, local_fn, local_tn = scr.scoring(rcg_output, train_data)
+          fp += local_fp
+          tp += local_tp
+          fn += local_fn
+          tn += local_tn
+          # Cover for division by zero
+          local_precision = round(local_tp / (local_tp + local_fp), 2) if (local_tp + local_fp) > 0 else "NA"
+          local_recall = round(local_tp / (local_tp + local_fn), 2) if (local_tp + local_fn) > 0 else "NA"
+          local_results = ["precision: ", local_precision, "recall: ", local_recall]
+          local_counts = str("tp: " + str(local_tp) + ", fp: " + str(local_fp) + ", tn: " + str(local_tn) + ", fn: " + str(local_fn))
+          local_results.append(local_counts)
+
+          with io.open('augmented_sentences.csv', 'a') as f:
+              write = csv.writer(f)
+              write.writerow("")
+              write.writerow(local_results)
+              write.writerow(ngram)
+              write.writerow(entity)
+          f.close()
+
       print('Done')
 
-      print("Prepare matches table... ", end="", flush=True)
-
-      print('Done')
-
-      quit()
-
-      print("Calculating accuracy... ", end="", flush=True)
-
-      results = scr.calc_accuracy(matches, testset, results_table)
-      accuracy = results[0]
-      recall = results[1]
-      results_table = results[2]
-      print('Done')
-
-      print("Saving results to file... ", end="", flush=True)
-      results_table.to_csv("./results_table.tsv", sep='\t')
-      print("Done")
-      print("Results saved in: results_table.tsv")
+      precision = round(tp / (tp + fp), 2) if (tp + fp) > 0 else "NA"
+      recall = round(tp / (tp + fn), 2) if (tp + fn) > 0 else "NA"
 
       print("\n" + print_line)
       print("  Results ")
       print(print_line)
-      print(results_table.head())
-      print("\nAccuracy: ", round(accuracy,2) , "%")
-      print("Recall:    ", round(recall,2) , "\n")
+      print("\nPrecision: ", precision)
+      print("Recall:    ", recall , "\n")
+
+
+
 
 
 

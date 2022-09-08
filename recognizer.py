@@ -108,14 +108,16 @@ def recognizer(input_list):
         sentence = sentence_queue.pop(0)
         while len(sentence.strip()) > 0: # this will stop the matching and trimming cycle
             print("QUEUE 1: ", sentence_queue)
-            ngram_list = make_ngrams(sentence.strip()) # we re-do the ngrams after every match
+            ngram_list = make_ngrams(sentence) # we re-do the ngrams after every match
             match = match_finder(ngram_list) # sentence here is a new, trimmed sub-sentence
             string_matched, entity_matched = match[0], match[1] # match_finder just sends the matched ngram and it's tag
-            start_index_matched = original_sentence.find(string_matched) # find match in original
+            start_index_matched = original_sentence.find(string_matched) # FOR SORTING - NOT TRIMMING find match in original
             string_dict[start_index_matched] = string_matched # store matched string
             entity_dict[start_index_matched] = entity_matched # store tag of string
             print("Sentence to be trimmed: ", sentence)
-            sentence_queue = trim_sentece(sentence_queue, sentence, start_index_matched, len(string_matched)) # returns queue
+
+            trim_index_matched = sentence.find(string_matched) # FOR SORTING - NOT TRIMMING find match in original
+            sentence_queue = trim_sentece(sentence_queue, sentence, trim_index_matched, len(string_matched)) # returns queue
             print("QUEUE 2: ", sentence_queue)
             sentence = sentence_queue.pop(0)
             print("Sentence after trimmed: ", sentence, start_index_matched, len(string_matched))

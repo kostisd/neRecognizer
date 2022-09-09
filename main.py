@@ -4,14 +4,11 @@ import recognizer as rcg
 import scoring as scr
 import pandas as pd
 import os
+import io
 import sys
 from sklearn.model_selection import train_test_split
-#import json
-from tabulate import tabulate
-import io
 import csv
 import dummy
-from prettytable import PrettyTable
 
 
 print_line = "------------"
@@ -25,7 +22,7 @@ if __name__ == '__main__':
     # Data Loading
     print("Reading data... ", end = '', flush=True)
     original_train_data = pd.read_csv(config.train_tsv, sep='\t', header=0)
-    original_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
+    #original_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
     print("Done")
 
     # Data Preparation
@@ -37,9 +34,7 @@ if __name__ == '__main__':
     print("Done")
 
     # Extract dev sentences and normalise
-    print("Preparing dev set... ", end = '', flush=True)
-    devset = prep.prep_dev_data(original_dev_data)
-    print("Done")
+    devset = prep.prep_dev_data()
 
     # filter uncommon entities in train set
     train_data = prep.filter_entities(train_data, config.ent_min_n)
@@ -54,7 +49,6 @@ if __name__ == '__main__':
       prep.make_dictionaries(train_data)
 
     if config.test:
-      # Run recognizer
       print("\n" + print_line)
       print("  Testing:   ")
       print(print_line)
@@ -68,8 +62,10 @@ if __name__ == '__main__':
       fp = tp = fn = tn = 0
       #print(list[devset])
 
-      for line in list(devset):
-          rcg_output = rcg.recognizer(line)
+      for index, line in devset.iterrows():
+          id = str(line['id']).strip()
+          sentence = str(line['sentence']).strip()
+          rcg_output = rcg.recognizer([id, sentence])
           ngram = rcg_output[1]
           entity = rcg_output[2]
 
@@ -92,17 +88,17 @@ if __name__ == '__main__':
           #     write.writerow(ngram)
           #     write.writerow(entity)
           # f.close()
-
-      print('Done')
-
-      precision = round(tp / (tp + fp), 2) if (tp + fp) > 0 else "NA"
-      recall = round(tp / (tp + fn), 2) if (tp + fn) > 0 else "NA"
-
-      print("\n" + print_line)
-      print("  Results ")
-      print(print_line)
-      print("\nPrecision: ", precision)
-      print("Recall:    ", recall , "\n")
+      #
+      # print('Done')
+      #
+      # precision = round(tp / (tp + fp), 2) if (tp + fp) > 0 else "NA"
+      # recall = round(tp / (tp + fn), 2) if (tp + fn) > 0 else "NA"
+      #
+      # print("\n" + print_line)
+      # print("  Results ")
+      # print(print_line)
+      # print("\nPrecision: ", precision)
+      # print("Recall:    ", recall , "\n")
 
 
 

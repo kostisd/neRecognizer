@@ -1,3 +1,4 @@
+import config
 import numpy as np
 import pandas as pd
 from os import path
@@ -45,27 +46,29 @@ def make_dictionaries(data):
             print(" Added Dictionary %s" % ent)
     return 0
 
-def prep_dev_data(read_dev_data):
+def prep_dev_data():
 
-    ready = False
-    #    devset_df.to_csv("data/devset.tsv", sep='\t')
-
-    #if exists("data/dev_data.tsv"):
-    if ready == True:
-        print("WHAT IS GOING ON")
-        #devset = pd.read_csv("data/dev_data.tsv", sep='\t', header=0)
+    #original_dev_data = pd.read_csv(config.original_dev_tsv, sep='\t', header=0)
+    #devset_df.to_csv("data/devset.tsv", sep='\t')
+    devset_tsv = "data/dev_data.tsv"
+    if exists(devset_tsv):
+        print("Dev Set file already exists - Using that")
+        devset_df = pd.read_csv(devset_tsv, sep='\t', header=0)
 
     else:
+        print("Preprocessing the dev set.. ", end='', flush=True)
+        original_dev_data = pd.read_csv(config.original_dev_tsv, sep='\t', header=0)
+        original_dev_data = original_dev_data.head(500)
+
         #devset = pd.DataFrame(columns=['id', 'sentence'])
         devset = []
         sentence = ""
         # Sort because some utterances seem messed up (l. 129050)
-        read_dev_data = read_dev_data.head(500)
         #read_dev_data = read_dev_data
 
        # read_dev_data = read_dev_data.sort_values('id') # sort messes things up
 
-        for index, line in read_dev_data.iterrows():
+        for index, line in original_dev_data.iterrows():
             word = str(line['word']).strip()
             id = str(line['id']).strip()
             pos = str(line['part_of_speech']).strip()
@@ -77,12 +80,13 @@ def prep_dev_data(read_dev_data):
                 not_empty = True if re.search('[a-zA-Z0-9]', word) else False
                 if pos != "-NONE-" and not_empty:
                     sentence += (" " + word)
-    devset_df = pd.DataFrame(devset, columns = ['id', 'sentence'])
-    devset_df.to_csv("data/devset.tsv", sep='\t')
-    print(devset_df)
-    return devset
 
+        devset_df = pd.DataFrame(devset, columns = ['id', 'sentence'])
+        devset_df.to_csv(devset_tsv, sep='\t')
+        print("Done")
 
+        #read_dev_data = read_dev_data.head(500)
+    return devset_df
 
 def bu_prep_dev_data(read_dev_data):
 

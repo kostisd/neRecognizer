@@ -19,10 +19,9 @@ if __name__ == '__main__':
     print("  Data Preprocessing")
     print(print_line + print_line)
 
-    # Data Loading
-    print("Reading data... ", end = '', flush=True)
+    # Train Data Loading
+    print("Reading train data... ", end = '', flush=True)
     original_train_data = pd.read_csv(config.train_tsv, sep='\t', header=0)
-    #original_dev_data = pd.read_csv(config.dev_tsv, sep='\t', header=0)
     print("Done")
 
     # Data Preparation
@@ -32,12 +31,11 @@ if __name__ == '__main__':
     print("Preparing train set... ", end = '', flush=True)
     train_data[config.string_col] = train_data[config.string_col].apply(prep.clean_string)
     print("Done")
-
-    # Extract dev sentences and normalise
-    devset = prep.prep_dev_data()
-
     # filter uncommon entities in train set
     train_data = prep.filter_entities(train_data, config.ent_min_n)
+
+    # Prepare dev set
+    devset = prep.prep_dev_data()
 
     if config.train:
       # extract entities to dictionaries from train set
@@ -55,12 +53,10 @@ if __name__ == '__main__':
 
       print("Running Recognizer... ", end = '', flush=True)
 
-      matches = []
       results_table = scr.make_table()
 
       # Initializing f/t positive and f/t negative values to store scores
       fp = tp = fn = tn = 0
-      #print(list[devset])
 
       for index, line in devset.iterrows():
           id = str(line['id']).strip()
@@ -89,7 +85,7 @@ if __name__ == '__main__':
           #     write.writerow(entity)
           # f.close()
       #
-      # print('Done')
+      # print('Done')g
       #
       # precision = round(tp / (tp + fp), 2) if (tp + fp) > 0 else "NA"
       # recall = round(tp / (tp + fn), 2) if (tp + fn) > 0 else "NA"
@@ -99,12 +95,4 @@ if __name__ == '__main__':
       # print(print_line)
       # print("\nPrecision: ", precision)
       # print("Recall:    ", recall , "\n")
-
-
-
-
-
-
-
-
 

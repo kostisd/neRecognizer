@@ -1,5 +1,7 @@
 import numpy as np
+import pandas as pd
 from os import path
+from os.path import exists
 import re
 
 def strong_clean_string(text):
@@ -44,23 +46,64 @@ def make_dictionaries(data):
     return 0
 
 def prep_dev_data(read_dev_data):
-    sentence_list = []
-    sentence = ""
-    # Sort because some utterances seem messed up (l. 129050)
-    #read_dev_data = read_dev_data.head(1000)
-    read_dev_data = read_dev_data.head(200)
 
-   # read_dev_data = read_dev_data.sort_values('id') # sort messes things up
+    ready = False
 
-    for index, line in read_dev_data.iterrows():
-        word = str(line['word'])
-        id = str(line['id'])
-        if word.strip() == ".":
-            sentence = clean_string(sentence)
-            sentence_list.append((id, sentence))
-            sentence = ""
-        else:
-            not_empty = True if re.search('[a-zA-Z0-9]', word) else False
-            if "*" not in word and not_empty:
-                sentence += (" " + word)
-    return sentence_list
+    #if exists("data/dev_data.tsv"):
+    if ready == True:
+        print("WHAT IS GOING ON")
+        #devset = pd.read_csv("data/dev_data.tsv", sep='\t', header=0)
+
+    else:
+        devset = []
+        sentence = ""
+        # Sort because some utterances seem messed up (l. 129050)
+        read_dev_data = read_dev_data.head(2000)
+        #read_dev_data = read_dev_data
+
+       # read_dev_data = read_dev_data.sort_values('id') # sort messes things up
+
+        for index, line in read_dev_data.iterrows():
+            word = str(line['word']).strip()
+            id = str(line['id']).strip()
+            pos = str(line['part_of_speech']).strip()
+            if pos == ".":
+                sentence = clean_string(sentence)
+                devset.append((id, sentence))
+                sentence = ""
+            else:
+                not_empty = True if re.search('[a-zA-Z0-9]', word) else False
+                if pos != "-NONE-" and not_empty:
+                    sentence += (" " + word)
+
+    return devset
+
+
+
+def bu_prep_dev_data(read_dev_data):
+
+    if exists("data/dev_data.tsv"):
+        devset = pd.read_csv("data/dev_data.tsv", sep='\t', header=0)
+
+    else:
+        devset = []
+        sentence = ""
+        # Sort because some utterances seem messed up (l. 129050)
+        #read_dev_data = read_dev_data.head(1000)
+        read_dev_data = read_dev_data
+
+       # read_dev_data = read_dev_data.sort_values('id') # sort messes things up
+
+        for index, line in read_dev_data.iterrows():
+            word = str(line['word'])
+            id = str(line['id'])
+            if word.strip() == ".":
+                sentence = clean_string(sentence)
+                devset.append((id, sentence))
+                sentence = ""
+            else:
+                not_empty = True if re.search('[a-zA-Z0-9]', word) else False
+                if "*" not in word and not_empty:
+                    sentence += (" " + word)
+
+    return devset

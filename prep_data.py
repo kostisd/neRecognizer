@@ -48,6 +48,7 @@ def make_dictionaries(data):
 def prep_dev_data(read_dev_data):
 
     ready = False
+    #    devset_df.to_csv("data/devset.tsv", sep='\t')
 
     #if exists("data/dev_data.tsv"):
     if ready == True:
@@ -55,10 +56,11 @@ def prep_dev_data(read_dev_data):
         #devset = pd.read_csv("data/dev_data.tsv", sep='\t', header=0)
 
     else:
+        #devset = pd.DataFrame(columns=['id', 'sentence'])
         devset = []
         sentence = ""
         # Sort because some utterances seem messed up (l. 129050)
-        read_dev_data = read_dev_data.head(2000)
+        read_dev_data = read_dev_data.head(500)
         #read_dev_data = read_dev_data
 
        # read_dev_data = read_dev_data.sort_values('id') # sort messes things up
@@ -69,13 +71,15 @@ def prep_dev_data(read_dev_data):
             pos = str(line['part_of_speech']).strip()
             if pos == ".":
                 sentence = clean_string(sentence)
-                devset.append((id, sentence))
+                devset.append([id, sentence])
                 sentence = ""
             else:
                 not_empty = True if re.search('[a-zA-Z0-9]', word) else False
                 if pos != "-NONE-" and not_empty:
                     sentence += (" " + word)
-
+    devset_df = pd.DataFrame(devset, columns = ['id', 'sentence'])
+    devset_df.to_csv("data/devset.tsv", sep='\t')
+    print(devset_df)
     return devset
 
 

@@ -34,11 +34,10 @@ def scoring(rcg_output, train_data):
                 else:
                     local_fp += 1
 
-    #print(tabulate([word_list, entity_list]))
-
     return [local_fp, local_tp, local_fn, local_tn]
 
-def make_table():
-    table = pd.DataFrame(columns=['id', 'string', 'span', 'type', 'hyp', 'result'])
-   # results_table = pd.DataFrame(columns=['string', 'span', 'type', 'hyp', 'result'])
-    return table
+def accuracy(fp, tp, fn, tn):
+    precision = round(tp / (tp + fp), 2) if (tp + fp) > 0 else "NA"
+    recall = round(tp / (tp + fn), 2) if (tp + fn) > 0 else "NA"
+    results = {"precision": precision, "recall": recall}
+    return results

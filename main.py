@@ -6,10 +6,7 @@ import pandas as pd
 import os
 import io
 import sys
-from sklearn.model_selection import train_test_split
 import csv
-import dummy
-
 
 print_line = "------------"
 
@@ -51,9 +48,7 @@ if __name__ == '__main__':
       print("  Testing:   ")
       print(print_line)
 
-      print("Running Recognizer... ", end = '', flush=True)
-
-      results_table = scr.make_table()
+      print("Running Recognizer... ", end = '\n', flush=True)
 
       # Initializing f/t positive and f/t negative values to store scores
       fp = tp = fn = tn = 0
@@ -66,33 +61,30 @@ if __name__ == '__main__':
           entity = rcg_output[2]
 
           local_fp, local_tp, local_fn, local_tn = scr.scoring(rcg_output, train_data)
+
           fp += local_fp
           tp += local_tp
           fn += local_fn
           tn += local_tn
-          # Cover for division by zero
-          local_precision = round(local_tp / (local_tp + local_fp), 2) if (local_tp + local_fp) > 0 else "NA"
-          local_recall = round(local_tp / (local_tp + local_fn), 2) if (local_tp + local_fn) > 0 else "NA"
-          local_results = ["precision: ", local_precision, "recall: ", local_recall]
-          local_counts = str("tp: " + str(local_tp) + ", fp: " + str(local_fp) + ", tn: " + str(local_tn) + ", fn: " + str(local_fn))
-          local_results.append(local_counts)
 
-          # with io.open('augmented_sentences.csv', 'a') as f:
-          #     write = csv.writer(f)
-          #     write.writerow("")
-          #     write.writerow(local_results)
-          #     write.writerow(ngram)
-          #     write.writerow(entity)
-          # f.close()
-      #
-      # print('Done')g
-      #
-      # precision = round(tp / (tp + fp), 2) if (tp + fp) > 0 else "NA"
-      # recall = round(tp / (tp + fn), 2) if (tp + fn) > 0 else "NA"
-      #
-      # print("\n" + print_line)
-      # print("  Results ")
-      # print(print_line)
-      # print("\nPrecision: ", precision)
-      # print("Recall:    ", recall , "\n")
+          results = scr.accuracy(local_fp, local_tp, local_fn, local_tn)
+          local_counts = ", tp: " + str(local_tp) + ", fp: " + str(local_fp) + ", tn: " \
+                         + str(local_tn) + ", fn: " + str(local_fn)
+          local_results = ["precision: ", results["precision"], "recall: ", results["recall"]]
+          print(local_results, local_counts, "\n")
 
+          with io.open('augmented_sentences.csv', 'a') as f:
+              write = csv.writer(f)
+              write.writerow("")
+              write.writerow(local_results)
+              write.writerow(ngram)
+              write.writerow(entity)
+          f.close()
+
+      final_results = scr.accuracy(fp, tp, fn, tn)
+
+      print("\n" + print_line)
+      print("  Results ")
+      print(print_line)
+      print("\nPrecision: ", results["precision"])
+      print("Recall:    ", results["recall"] , "\n")

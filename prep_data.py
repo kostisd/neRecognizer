@@ -5,13 +5,6 @@ from os import path
 from os.path import exists
 import re
 
-# def strong_clean_string(text):
-#     # think about keeping dots etc
-#     text = re.sub(r'[^a-zA-Z0-9 ]', ' ', str(text)) # str() because some NA string was causing a type error.
-#     text = re.sub(',', ' ', str(text))
-#     text = re.sub(' +', ' ', (str(text))).lower().strip()
-#     return text
-
 def clean_string(text):
     # think about keeping dots etc
     text = re.sub(',', ' ', str(text))
@@ -54,7 +47,7 @@ def prep_dev_data():
     else:
         print("Preprocessing the dev set.. ", end='', flush=True)
         original_dev_data = pd.read_csv(config.original_dev_tsv, sep='\t', header=0)
-        original_dev_data = original_dev_data.head(500)
+        original_dev_data = original_dev_data.head(200)
 
         devset = []
         sentence = ""
@@ -76,28 +69,3 @@ def prep_dev_data():
         devset_df.to_csv(devset_tsv, sep='\t')
         print("Done")
     return devset_df
-
-def bu_prep_dev_data(read_dev_data):
-
-    if exists("data/dev_data.tsv"):
-        devset = pd.read_csv("data/dev_data.tsv", sep='\t', header=0)
-
-    else:
-        devset = []
-        sentence = ""
-        # Sort because some utterances seem messed up (l. 129050)
-        #read_dev_data = read_dev_data.head(1000)
-        read_dev_data = read_dev_data
-
-        for index, line in read_dev_data.iterrows():
-            word = str(line['word'])
-            id = str(line['id'])
-            if word.strip() == ".":
-                sentence = clean_string(sentence)
-                devset.append((id, sentence))
-                sentence = ""
-            else:
-                not_empty = True if re.search('[a-zA-Z0-9]', word) else False
-                if "*" not in word and not_empty:
-                    sentence += (" " + word)
-    return devset

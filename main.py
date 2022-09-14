@@ -3,6 +3,7 @@ import prep_data as prep
 import recognizer as rcg
 import scoring as scr
 import pandas as pd
+from tabulate import tabulate
 import os
 import io
 import sys
@@ -50,41 +51,71 @@ if __name__ == '__main__':
 
       print("Running Recognizer... ", end = '\n', flush=True)
 
-      # Initializing f/t positive and f/t negative values to store scores
-      fp = tp = fn = tn = 0
+      # Create dictionaries to store scores per entity
+      entities_list = list(train_data['type'].value_counts().index)
+      fp_dict, tp_dict, fn_dict = ({} for i in range(3))
 
+      for ent in entities_list:
+          fp_dict[ent] = tp_dict[ent] = fn_dict[ent] = 0
+      dict_list = [fp_dict, tp_dict, fn_dict]
+
+      # Initializing false / true positive and negative values to store scores
+      fp, tp, fn = [0] * 3
+
+      devset = devset.head(10)
       for index, line in devset.iterrows():
           id = str(line['id']).strip()
           sentence = str(line['sentence']).strip()
           rcg_output = rcg.recognizer([id, sentence])
-          ngram = rcg_output[1]
-          entity = rcg_output[2]
+          word_list = rcg_output[1]
+          entity_list = rcg_output[2]
 
-          local_fp, local_tp, local_fn, local_tn = scr.scoring(rcg_output, train_data)
+          local_fp, local_tp, local_fn, out_dict_list = scr.scoring(rcg_output, train_data, dict_list)
 
           fp += local_fp
           tp += local_tp
           fn += local_fn
-          tn += local_tn
 
-          results = scr.accuracy(local_fp, local_tp, local_fn, local_tn)
-          local_counts = ", tp: " + str(local_tp) + ", fp: " + str(local_fp) + ", tn: " \
-                         + str(local_tn) + ", fn: " + str(local_fn)
-          local_results = ["precision: ", results["precision"], "recall: ", results["recall"]]
-          print(local_results, local_counts, "\n")
+          #fp_dict, tp_dict, fn_dict = out_dict_list
+          fp_dict = out_dict_list[0]
+          tp_dict = out_dict_list[1]
+          fn_dict = out_dict_list[2]
+
+          # Get results for line
+          local_results = scr.accuracy(local_fp, local_tp, local_fn)
+          local_counts = "tp: " + str(local_tp) + ", fp: " + str(local_fp) + \
+                         ", fn: " + str(local_fn)
+          local_accuracy = "precision: " + str(round(local_results['precision'], 2)) + " recall: " + \
+                          str(round(local_results["recall"], 2))
+          print(tabulate([word_list, entity_list]))
+          print(local_accuracy, local_counts, "\n")
 
           with io.open('augmented_sentences.csv', 'a') as f:
               write = csv.writer(f)
+              write.writerow(word_list)
+              write.writerow(entity_list)
+              write.writerow([local_accuracy, local_counts])
               write.writerow("")
-              write.writerow(local_results)
-              write.writerow(ngram)
-              write.writerow(entity)
           f.close()
 
-      final_results = scr.accuracy(fp, tp, fn, tn)
+      fp_dict, tp_dict, fn_dict = out_dict_list
+
+      final_results = scr.accuracy(fp, tp, fn)
+
+      print("\n" + print_line + print_line)
+      print("   Results by Entity")
+      print(print_line + print_line)
+
+      print_list = []
+      for ent in entities_list:
+          entity_results = scr.accuracy(fp_dict[ent], tp_dict[ent], fn_dict[ent])
+          entity_precision = round(entity_results["precision"], 2)
+          entity_recall = round(entity_results["recall"], 2)
+          print_list.append([ent, entity_precision, entity_recall])
+      print(tabulate(print_list, headers = ["Entity", "Precision  ", "Recall  "]), "\n")
 
       print("\n" + print_line)
       print("  Results ")
       print(print_line)
-      print("\nPrecision: ", results["precision"])
-      print("Recall:    ", results["recall"] , "\n")
+      print("Precision: ", round(final_results["precision"], 2))
+      print("Recall:    ", round(final_results["recall"], 2),"\n")

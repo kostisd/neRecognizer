@@ -103,6 +103,4 @@ def recognizer(input_list):
             word_list.append(word[1])
             entity_list.append(entity[1])
 
-    print(tabulate([word_list, entity_list]))
-
     return (id, word_list, entity_list)

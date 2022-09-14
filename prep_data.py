@@ -36,7 +36,7 @@ def make_dictionaries(data):
             for text in sorted(set(list(text_list))):
                 dict.write("%s\n" % text)
             print(" Added Dictionary %s" % ent)
-    return 0
+    return
 
 def prep_dev_data():
     devset_tsv = "data/dev_data.tsv"

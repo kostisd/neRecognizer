@@ -62,7 +62,7 @@ if __name__ == '__main__':
       # Initializing false / true positive and negative values to store scores
       fp, tp, fn = [0] * 3
 
-      devset = devset.head(10)
+      devset = devset.head(10) # Comment to run full set!!
       for index, line in devset.iterrows():
           id = str(line['id']).strip()
           sentence = str(line['sentence']).strip()

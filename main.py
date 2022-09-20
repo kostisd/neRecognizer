@@ -53,8 +53,7 @@ if __name__ == '__main__':
       fp_dict, tp_dict, fn_dict = ({} for i in range(3))
 
       for ent in entities_list:
-          
-          fp_dict[ent] = tp_dict[ent] = fn_dict[ent] = 0
+          fp_dict[ent], tp_dict[ent], fn_dict[ent] = [0] * 3
       dict_list = [fp_dict, tp_dict, fn_dict]
 
       # Initializing false / true positive and negative values to store scores

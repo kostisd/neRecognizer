@@ -4,9 +4,7 @@ import recognizer as rcg
 import scoring as scr
 import pandas as pd
 from tabulate import tabulate
-import os
 import io
-import sys
 import csv
 
 print_line = "------------"
@@ -24,7 +22,6 @@ if __name__ == '__main__':
 
     # Data Preparation
     train_data = original_train_data
-
     # Normalise utterances
     print("Preparing train set... ", end = '', flush=True)
     train_data[config.string_col] = train_data[config.string_col].apply(prep.clean_string)
@@ -51,11 +48,12 @@ if __name__ == '__main__':
 
       print("Running Recognizer... ", end = '\n', flush=True)
 
-      # Create dictionaries to store scores per entity
+      # Create dicts to store scores per entity
       entities_list = list(train_data['type'].value_counts().index)
       fp_dict, tp_dict, fn_dict = ({} for i in range(3))
 
       for ent in entities_list:
+          
           fp_dict[ent] = tp_dict[ent] = fn_dict[ent] = 0
       dict_list = [fp_dict, tp_dict, fn_dict]
 

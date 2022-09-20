@@ -3,12 +3,6 @@ import re
 
 def scoring(rcg_output, train_data, dict_list):
     tp_dict, fp_dict, fn_dict = dict_list[0], dict_list[1], dict_list[2]
-  #  tp_dict, fp_dict, fn_dict = [{'ORG': 0, 'GPE': 0, 'PERSON': 0, 'DATE': 0,
-  #                                   'CARDINAL': 0, 'NORP': 0, 'MONEY': 0, 'PERCENT': 0,
-  #                                   'ORDINAL': 0, 'LOC': 0, 'TIME': 0, 'WORK_OF_ART': 0,
-  #                                   'QUANTITY': 0, 'FAC': 0, 'PRODUCT': 0, 'EVENT': 0,
-  #                                   'LAW': 0, 'LANGUAGE': 0} for _ in range(3)]
-
     id = re.sub(r'^.*?@', '', rcg_output[0])
     ngram_list = rcg_output[1]
     entity_list = rcg_output[2]

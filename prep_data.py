@@ -36,7 +36,7 @@ def make_dictionaries(data):
             for text in sorted(set(list(text_list))):
                 dict.write("%s\n" % text)
             print(" Added Dictionary %s" % ent)
-    return
+    return 0
 
 def prep_dev_data():
     devset_tsv = "data/dev_data.tsv"
@@ -47,7 +47,7 @@ def prep_dev_data():
     else:
         print("Preprocessing the dev set.. ", end='', flush=True)
         original_dev_data = pd.read_csv(config.original_dev_tsv, sep='\t', header=0)
-        original_dev_data = original_dev_data.head(200)
+        original_dev_data = original_dev_data
 
         devset = []
         sentence = ""

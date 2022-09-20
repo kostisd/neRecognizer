@@ -40,7 +40,10 @@ def scoring(rcg_output, train_data, dict_list, top_ngrams):
                     local_fp += 1
                     local_fn += 1
                     fp_dict[entity] += 1
-                    fn_dict[true_entity] += 1
+                    if true_entity in fn_dict.keys():
+                        fn_dict[true_entity] += 1
+                    else:
+                        print("Error: Could not find the true entity in the dictionary keys")
             else: # if the ngram cannot be found in the true entities
                 if entity == "NOMATCH":
                     local_tn += 1 # we don't use this for scoring

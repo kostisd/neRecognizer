@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 
-def scoring(rcg_output, train_data, dict_list):
+def scoring(rcg_output, train_data, dict_list, top_ngrams):
     tp_dict, fp_dict, fn_dict = dict_list[0], dict_list[1], dict_list[2]
     id = re.sub(r'^.*?@', '', rcg_output[0])
     ngram_list = rcg_output[1]
@@ -17,7 +17,7 @@ def scoring(rcg_output, train_data, dict_list):
     train_data = train_data.dropna(subset = ['subtree_id'])
     train_data = train_data[train_data['subtree_id'].str.contains(id)]
     # true_entity = "NOMATCH"
-    true_entity = ""
+    # true_entity = ""
 
 # We check every ngram against the id-based subset
     if not train_data.empty:
@@ -26,32 +26,30 @@ def scoring(rcg_output, train_data, dict_list):
             str_list = train_data['string'].to_list()
             if ngram in str_list:
                 true_entity = (train_data[train_data['string'] == ngram]['type'].to_string(index = False)).strip()
-                #print("FOUND", entity, true_entity, ngram)
                 if entity == "NOMATCH": # there is a true_entity for this str but we tagged it as NOMATCH
-                  #  print("FN NOMATCH", entity, true_entity, ngram)
                     local_fn += 1
                     fn_dict[true_entity] += 1
                 elif entity == true_entity:
-                   # print("TP", entity, true_entity, ngram)
+                    if ngram in top_ngrams.keys():
+                        top_ngrams[ngram] += 1
+                    else:
+                        top_ngrams[ngram] = 1
                     local_tp += 1
                     tp_dict[entity] += 1
                 elif entity != true_entity:
-                    #print("FP / FN", entity, true_entity, ngram)
                     local_fp += 1
                     local_fn += 1
                     fp_dict[entity] += 1
                     fn_dict[true_entity] += 1
             else: # if the ngram cannot be found in the true entities
-                #print("NOT FOUND", entity, true_entity, ngram)
                 if entity == "NOMATCH":
                     local_tn += 1 # we don't use this for scoring
                 else:
-                    #print("FP - NOT FOUND", entity, true_entity, ngram)
                     local_fp += 1 # we tagged a non-existing name/entity
 
     out_dicts = [fp_dict, tp_dict, fn_dict]
 
-    return [local_fp, local_tp, local_fn, out_dicts]
+    return [local_fp, local_tp, local_fn, out_dicts, top_ngrams]
 
 def accuracy(fp, tp, fn):
     precision = tp / (tp + fp) if (tp + fp) > 0 else False # a compromise to avoid "divide by zero" cases

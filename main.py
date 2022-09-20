@@ -2,6 +2,7 @@ import config
 import prep_data as prep
 import recognizer as rcg
 import scoring as scr
+#import graphs
 import pandas as pd
 from tabulate import tabulate
 import io
@@ -55,6 +56,7 @@ if __name__ == '__main__':
       for ent in entities_list:
           fp_dict[ent], tp_dict[ent], fn_dict[ent] = [0] * 3
       dict_list = [fp_dict, tp_dict, fn_dict]
+      top_ngrams = {} # store the found matches with their frequencies
 
       # Initializing false / true positive and negative values to store scores
       fp, tp, fn = [0] * 3
@@ -66,8 +68,7 @@ if __name__ == '__main__':
           rcg_output = rcg.recognizer([id, sentence])
           word_list = rcg_output[1]
           entity_list = rcg_output[2]
-
-          local_fp, local_tp, local_fn, out_dict_list = scr.scoring(rcg_output, train_data, dict_list)
+          local_fp, local_tp, local_fn, out_dict_list, out_top_ngrams = scr.scoring(rcg_output, train_data, dict_list, top_ngrams)
 
           fp += local_fp
           tp += local_tp
@@ -93,9 +94,8 @@ if __name__ == '__main__':
           f.close()
 
       # Create scores dataframe
-      headers = ["Entity",  "Precision  ", "Recall  ", "True Positives  ", "False Positives  ", "False Negatives  "]
+      headers = ["Entity",  "Precision", "Recall", "True Positives", "False Positives", "False Negatives"]
       scores_df = pd.DataFrame(columns = headers)
-
 
       fp_dict, tp_dict, fn_dict = out_dict_list
       final_results = scr.accuracy(fp, tp, fn)
@@ -111,15 +111,15 @@ if __name__ == '__main__':
           entity_precision = round(entity_results["precision"], 2)
           entity_recall = round(entity_results["recall"], 2)
           results_line = [ent, entity_precision, entity_recall, tp_dict[ent], fp_dict[ent], fn_dict[ent]]
-          #print_list.append([ent,  entity_precision, entity_recall, tp_dict[ent], fp_dict[ent], fn_dict[ent], ])
           print_list.append(results_line) # to tabulate for cli printing
           scores_df.loc[len(scores_df)] = results_line # save to file
-          #scores_df.loc[len(scores_df)] = [ent,  entity_precision, entity_recall, tp_dict[ent], fp_dict[ent], fn_dict[ent]]
 
       scores_df.to_csv("results/scoring.csv", index=False)
 
-      #print(tabulate(print_list, headers = ["Entity",  "Precision  ", "Recall  ", "True Positives  ", "False Positives  ", "False Negatives  "]), "\n")
       print(tabulate(print_list, headers = headers), "\n")
+
+      top_ngrams_df = pd.DataFrame(top_ngrams.items(), columns=['Entity', 'Counts'])
+      top_ngrams_df.to_csv("results/top_ngrams.csv", index=False)
 
       print("\n" + print_line)
       print("  Results ")

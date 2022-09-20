@@ -106,10 +106,12 @@ if __name__ == '__main__':
       print_list = []
       for ent in entities_list:
           entity_results = scr.accuracy(fp_dict[ent], tp_dict[ent], fn_dict[ent])
+
           entity_precision = round(entity_results["precision"], 2)
           entity_recall = round(entity_results["recall"], 2)
-          print_list.append([ent, entity_precision, entity_recall])
-      print(tabulate(print_list, headers = ["Entity", "Precision  ", "Recall  "]), "\n")
+          print_list.append([ent,  entity_precision, entity_recall, tp_dict[ent], fp_dict[ent], fn_dict[ent], ])
+      print(tabulate(print_list, headers = ["Entity",  "Precision  ", "Recall  ", "True Positives  ",
+                                            "False Positives  ", "False Negatives  "]), "\n")
 
       print("\n" + print_line)
       print("  Results ")

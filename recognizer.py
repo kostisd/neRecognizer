@@ -1,8 +1,8 @@
+import prep_data
 import pandas as pd
 from tabulate import tabulate
 import re
 import os
-import prep_data
 
 def make_ngrams(sentence):
     ngram = 1 # starting from 1
@@ -49,7 +49,6 @@ def searchText(ngram_string, path):
                 if found:
                     match_found = True
                     match_entity = entity
-
                     f.close()
                     os.chdir(pwd)  # Return to default pwd
                     return [match_found, match_entity]

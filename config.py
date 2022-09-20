@@ -9,5 +9,5 @@ original_dev_tsv = "data/ontonotes_en_token.tsv"
 # Gerneral
 ent_min_n = 3 # remove entities if n < 3
 
-train=False
+train=True
 test=True

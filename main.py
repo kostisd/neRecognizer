@@ -73,10 +73,7 @@ if __name__ == '__main__':
           tp += local_tp
           fn += local_fn
 
-          #fp_dict, tp_dict, fn_dict = out_dict_list
-          fp_dict = out_dict_list[0]
-          tp_dict = out_dict_list[1]
-          fn_dict = out_dict_list[2]
+          fn_dict, tp_dict, fn_dict = out_dict_list
 
           # Get results for line
           local_results = scr.accuracy(local_fp, local_tp, local_fn)
@@ -95,6 +92,7 @@ if __name__ == '__main__':
               write.writerow("")
           f.close()
 
+          # Create scores dataframe
       fp_dict, tp_dict, fn_dict = out_dict_list
 
       final_results = scr.accuracy(fp, tp, fn)

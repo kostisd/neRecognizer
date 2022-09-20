@@ -84,7 +84,7 @@ if __name__ == '__main__':
           print(tabulate([word_list, entity_list]))
           print(local_accuracy, local_counts, "\n")
 
-          with io.open('augmented_sentences.csv', 'a') as f:
+          with io.open('results/augmented_sentences.csv', 'a') as f:
               write = csv.writer(f)
               write.writerow(word_list)
               write.writerow(entity_list)
@@ -92,9 +92,12 @@ if __name__ == '__main__':
               write.writerow("")
           f.close()
 
-          # Create scores dataframe
-      fp_dict, tp_dict, fn_dict = out_dict_list
+      # Create scores dataframe
+      headers = ["Entity",  "Precision  ", "Recall  ", "True Positives  ", "False Positives  ", "False Negatives  "]
+      scores_df = pd.DataFrame(columns = headers)
 
+
+      fp_dict, tp_dict, fn_dict = out_dict_list
       final_results = scr.accuracy(fp, tp, fn)
 
       print("\n" + print_line + print_line)
@@ -107,9 +110,16 @@ if __name__ == '__main__':
 
           entity_precision = round(entity_results["precision"], 2)
           entity_recall = round(entity_results["recall"], 2)
-          print_list.append([ent,  entity_precision, entity_recall, tp_dict[ent], fp_dict[ent], fn_dict[ent], ])
-      print(tabulate(print_list, headers = ["Entity",  "Precision  ", "Recall  ", "True Positives  ",
-                                            "False Positives  ", "False Negatives  "]), "\n")
+          results_line = [ent, entity_precision, entity_recall, tp_dict[ent], fp_dict[ent], fn_dict[ent]]
+          #print_list.append([ent,  entity_precision, entity_recall, tp_dict[ent], fp_dict[ent], fn_dict[ent], ])
+          print_list.append(results_line) # to tabulate for cli printing
+          scores_df.loc[len(scores_df)] = results_line # save to file
+          #scores_df.loc[len(scores_df)] = [ent,  entity_precision, entity_recall, tp_dict[ent], fp_dict[ent], fn_dict[ent]]
+
+      scores_df.to_csv("results/scoring.csv", index=False)
+
+      #print(tabulate(print_list, headers = ["Entity",  "Precision  ", "Recall  ", "True Positives  ", "False Positives  ", "False Negatives  "]), "\n")
+      print(tabulate(print_list, headers = headers), "\n")
 
       print("\n" + print_line)
       print("  Results ")

@@ -11,4 +11,8 @@ if [ ! -d "dictionaries" ]; then
   mkdir dictionaries
 fi
 
+if [ ! -d "results" ]; then
+  mkdir results
+fi
+
 python3 main.py

@@ -2,7 +2,6 @@ import config
 import prep_data as prep
 import recognizer as rcg
 import scoring as scr
-#import graphs
 import pandas as pd
 from tabulate import tabulate
 import io
@@ -61,7 +60,7 @@ if __name__ == '__main__':
       # Initializing false / true positive and negative values to store scores
       fp, tp, fn = [0] * 3
 
-      devset = devset.head(10) # Comment to run full set!!
+      devset = devset.head(2) # Comment to run full set!!
       for index, line in devset.iterrows():
           id = str(line['id']).strip()
           sentence = str(line['sentence']).strip()
@@ -69,7 +68,6 @@ if __name__ == '__main__':
           word_list = rcg_output[1]
           entity_list = rcg_output[2]
           local_fp, local_tp, local_fn, out_dict_list, out_top_ngrams = scr.scoring(rcg_output, train_data, dict_list, top_ngrams)
-
           fp += local_fp
           tp += local_tp
           fn += local_fn

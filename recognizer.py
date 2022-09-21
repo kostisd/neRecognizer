@@ -15,6 +15,7 @@ def make_ngrams(sentence):
             ngram_list.append(grams)
             i += 1
         ngram += 1
+    print(ngram_list)
     return ngram_list
 
 def trim_sentece(sentence_queue, sentence, ngram_start, ngram_length):
@@ -80,7 +81,6 @@ def recognizer(input_list):
     string_dict = {} # add all matched ngrams here
     entity_dict = {} # add all found entities here
     while sentence_queue:
-    #    print("Queue 0: ", sentence_queue)
         sentence = sentence_queue.pop(0)
         while len(sentence.strip()) > 0: # this will stop the matching and trimming cycle
             ngram_list = make_ngrams(sentence) # we re-do the ngrams after every match

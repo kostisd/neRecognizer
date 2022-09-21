@@ -40,6 +40,21 @@ We can now read the sentences as one string and use the ids to search the train 
 
 ![Original dev dataset](./graphs/prep_dev.png)
 
+### 2. Recognizer
+
+First we extract all the possible ngrams from the sentence. We start searching from the longest ones and stop when we find a match. 
+
+
+![Original dev dataset](./graphs/make_ngram.png)
+![Original dev dataset](./graphs/ngram.png)
+
+We then update the sentence by removing the matched string and we add the remaining sentence(s) to the queue.
+We continue until no ngrams are left
+![Original dev dataset](./graphs/trim_sentence.png)
+![Original dev dataset](./graphs/queue.png)
+
+
+
 ### 2. Printing Results
 
 Printing out the augmented sentences, using NOMATCH for empty tags.
